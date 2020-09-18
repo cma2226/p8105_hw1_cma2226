@@ -73,3 +73,5 @@ Now I will convert the logical vector to a factor and then convert the result to
 ```{r more multiplication, warning=FALSE, results='hide'}
 as.numeric(as.factor(pull(prob1_df, samp_gt_0))) * pull(prob1_df, samp) 
 ```
+
+**Problem 2**
