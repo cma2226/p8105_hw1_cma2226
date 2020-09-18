@@ -1,0 +1,75 @@
+---
+title: "Problems 1 and 2 Rmd file"
+author: Caroline Andy
+output: html_document
+---
+
+Here are my solutions to homework 1. 
+
+```{r}
+library(tidyverse)
+```
+
+**Problem 1**
+
+Create a data frame containing the specified elements. 
+
+```{r create df}
+prob1_df = 
+  tibble(
+    samp = rnorm(10),
+    samp_gt_0 = samp > 0,
+    char_vec = c("a","b","c","d","e","f","g","h","i","j"),
+    factor_vec = factor(c("low","low","low","med","med","med","high","high","high","high"))
+  )
+```
+
+_Calculating mean_
+
+Take the mean of each variable.
+
+```{r mean}
+mean(pull(prob1_df, samp))
+mean(pull(prob1_df, samp_gt_0))
+mean(pull(prob1_df, char_vec))
+mean(pull(prob1_df, factor_vec))
+```
+
+I am able to take the mean of my numerical and logical variables, samp and samp_gt_0, but not my character and factor variables, char_vec and factor_vec.
+
+_Converting variable types_
+
+In some cases, I can explicitly convert variables from one type to another. Here, I will attempt to convert each of my variables to numeric. 
+
+```{r try numeric, warning=FALSE, results='hide'}
+as.numeric(pull(prob1_df, samp))
+as.numeric(pull(prob1_df, samp_gt_0))
+as.numeric(pull(prob1_df, char_vec))
+as.numeric(pull(prob1_df, factor_vec))
+```
+
+The numeric and logical fields, samp and samp_gt_0, were converted into numeric fields by the as.numeric function. The samp field was numeric to begin with. It remained unchanged, and the mean was calculated from the numeric entries. 
+
+The samp_gt_0 field was a logical field with 0 and 1 values denoting whether the samp entries are above or below 0. This binary field could be converted into numeric using the as.numeric function. The mean function was able to generate the mean for samp_gt_0 by first converting the logical entries into numeric values. 
+
+The character vector was unable to be converted into a numeric field; we cannot calculate a mean for this variable. 
+
+The factor vector was able to be coerced into a numeric variable; however, the mean cannot be calculated until the variable is first manually converted into a numeric variable. 
+
+_Multiplying coerced variables_
+
+Now I will multiply the random sample variable by the logical vector. 
+
+```{r as.numeric multiplication, warning=FALSE, results='hide'}
+as.numeric(pull(prob1_df, samp_gt_0)) * pull(prob1_df, samp) 
+```
+
+Now I will convert the logical vector to a factor, and multiply the random sample by the result.
+```{r as.factor multiplication, warning=FALSE, results='hide'}
+as.factor(pull(prob1_df, samp_gt_0)) * pull(prob1_df, samp) 
+```
+
+Now I will convert the logical vector to a factor and then convert the result to numeric, and multiply the random sample by the result
+```{r more multiplication, warning=FALSE, results='hide'}
+as.numeric(as.factor(pull(prob1_df, samp_gt_0))) * pull(prob1_df, samp) 
+```
