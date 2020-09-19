@@ -1,18 +1,19 @@
 ---
-title: "Problems 1 and 2 Rmd file"
+title: "Data Science 1: Homework 1"
 author: Caroline Andy
+date: 9/18/2020
 output: html_document
 ---
 
 Here are my solutions to homework 1. 
 
-```{r}
+```{r tidyverse, message = FALSE, results = 'hide', warning = FALSE}
 library(tidyverse)
 ```
 
 **Problem 1**
 
-Create a data frame containing the specified elements. 
+Generate a data frame containing the required elements.
 
 ```{r create df}
 prob1_df = 
@@ -20,15 +21,14 @@ prob1_df =
     samp = rnorm(10),
     samp_gt_0 = samp > 0,
     char_vec = c("a","b","c","d","e","f","g","h","i","j"),
-    factor_vec = factor(c("low","low","low","med","med","med","high","high","high","high"))
-  )
+    factor_vec = factor(c("level_1","level_1","level_1","level_2","level_2","level_2","level_3","level_3","level_3","level_3")))
 ```
 
 _Calculating mean_
 
-Take the mean of each variable.
+Next I will attempt to take the mean of each variable.
 
-```{r mean}
+```{r mean, warning = FALSE}
 mean(pull(prob1_df, samp))
 mean(pull(prob1_df, samp_gt_0))
 mean(pull(prob1_df, char_vec))
@@ -41,16 +41,16 @@ _Converting variable types_
 
 In some cases, I can explicitly convert variables from one type to another. Here, I will attempt to convert each of my variables to numeric. 
 
-```{r try numeric, warning=FALSE, results='hide'}
+```{r try numeric, warning = FALSE, results = 'hide'}
 as.numeric(pull(prob1_df, samp))
 as.numeric(pull(prob1_df, samp_gt_0))
 as.numeric(pull(prob1_df, char_vec))
 as.numeric(pull(prob1_df, factor_vec))
 ```
 
-The numeric and logical fields, samp and samp_gt_0, were converted into numeric fields by the as.numeric function. The samp field was numeric to begin with. It remained unchanged, and the mean was calculated from the numeric entries. 
+The as.numeric function generates numeric variable outputs for the numeric and logical vectors, samp and samp_gt_0. The samp field, numeric to begin with, remained unchanged. The mean of samp, generated above, was calculated using its numeric entries. 
 
-The samp_gt_0 field was a logical field with 0 and 1 values denoting whether the samp entries are above or below 0. This binary field could be converted into numeric using the as.numeric function. The mean function was able to generate the mean for samp_gt_0 by first converting the logical entries into numeric values. 
+The samp_gt_0 field was a logical vector with 0 and 1 values denoting whether the samp entries are above or below 0. This binary field was converted into numeric using the as.numeric function. In the above example, the mean function generated the mean for samp_gt_0 by first converting its logical entries into numeric values. 
 
 The character vector was unable to be converted into a numeric field; we cannot calculate a mean for this variable. 
 
@@ -59,19 +59,47 @@ The factor vector was able to be coerced into a numeric variable; however, the m
 _Multiplying coerced variables_
 
 Now I will multiply the random sample variable by the logical vector. 
-
-```{r as.numeric multiplication, warning=FALSE, results='hide'}
+```{r as.numeric multiplication, warning = FALSE}
 as.numeric(pull(prob1_df, samp_gt_0)) * pull(prob1_df, samp) 
 ```
 
 Now I will convert the logical vector to a factor, and multiply the random sample by the result.
-```{r as.factor multiplication, warning=FALSE, results='hide'}
+```{r as.factor multiplication, warning = FALSE}
 as.factor(pull(prob1_df, samp_gt_0)) * pull(prob1_df, samp) 
 ```
 
 Now I will convert the logical vector to a factor and then convert the result to numeric, and multiply the random sample by the result
-```{r more multiplication, warning=FALSE, results='hide'}
+```{r more multiplication, warning = FALSE}
 as.numeric(as.factor(pull(prob1_df, samp_gt_0))) * pull(prob1_df, samp) 
 ```
 
 **Problem 2**
+
+_Loading and describing dataset_
+
+For the following problem, I will load the penguins dataset. 
+
+```{r load data}
+data("penguins", package = "palmerpenguins")
+```
+
+The penguin dataset contains `r nrow(penguins)` rows, where each row corresponds with an observed penguin. This dataset contains `r ncol(penguins)` columns, which include the following variables: penguin species, island, bill length, bill depth, flipper length, body mass, sex and year. 
+
+Data are collected from years `r min(as.numeric(pull(penguins, year)))` to `r max (as.numeric(pull(penguins,year)))`.
+There are `r nlevels(as.factor(pull(penguins, species)))` different species (`r levels(as.factor(pull(penguins, species)))`), and `r nlevels(as.factor(pull(penguins, island)))` different islands (`r levels(as.factor(pull(penguins, island)))`) represented in the penguins dataset.
+
+The mean bill length is `r round(mean(na.omit(pull(penguins, bill_length_mm))), digits = 2)` millimeters. Mean body mass is `r round(mean(na.omit(pull(penguins, body_mass_g))), digits = 2)` grams. The mean flipper length is `r round(mean(na.omit(pull(penguins, flipper_length_mm))), digits = 2)` millimeters.
+
+_Generating a scatterplot_ 
+
+Next I will generate a scatterplot graphing bill length and flipper length for each observed penguin, where dot color is determined by penguin species. 
+
+```{r scatterplot, warning = FALSE}
+# generating scatterplot
+library(ggplot2)
+penguinsggplot <- ggplot(penguins, aes(x = bill_length_mm, y = flipper_length_mm, color = species)) + geom_point()
+#viewing scatterplot
+penguinsggplot
+# exporting scatterplot
+ggsave("penguinsggplot.pdf")
+```
